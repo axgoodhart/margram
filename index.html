@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0709">
+  <title>Margram</title>
+  <link rel="icon" type="image/png" href="logo.png">
+  <link rel="apple-touch-icon" href="logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@800&family=Manrope:wght@300;400;500;600&family=JetBrains+Mono:wght@400&family=Instrument+Serif:ital@1&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      /* Surfaces */
+      --bg: #0b0709;
+      --surface: rgba(255, 255, 255, 0.03);
+      --hairline: rgba(255, 255, 255, 0.09);
+      --hairline-strong: rgba(255, 255, 255, 0.16);
+
+      /* Text */
+      --text: #f4eef1;
+      --text-muted: #9b8e95;
+      --text-faint: #5d5258;
+
+      /* Accent */
+      --accent: #d0237f;
+      --accent-hover: #e0368f;
+      --accent-glow: rgba(208, 35, 127, 0.35);
+      --accent-line: #ff5cc6;
+      --danger: #ff7a8a;
+
+      /* Type */
+      --font-display: 'Outfit', sans-serif;
+      --font-ui: 'Manrope', system-ui, sans-serif;
+      --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+      --font-writing: 'Instrument Serif', Georgia, serif;
+
+      --radius: 8px;
+      --tile-w: 40px;
+      --tile-h: 48px;
+      --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body { margin: 0; }
+
+    body {
+      min-height: 100vh;
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 70% 45% at 50% 115%, rgba(208, 35, 127, 0.22), transparent 70%),
+        radial-gradient(ellipse 50% 30% at 50% -10%, rgba(255, 92, 198, 0.06), transparent 70%);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+    }
+
+    ::selection { background: var(--accent-glow); }
+
+    :focus-visible {
+      outline: 2px solid var(--accent-line);
+      outline-offset: 3px;
+    }
+
+    main {
+      max-width: 880px;
+      margin: 0 auto;
+      padding: clamp(48px, 10vh, 112px) 20px 96px;
+    }
+
+    /* ---------- Header ---------- */
+    header {
+      text-align: center;
+      margin-bottom: clamp(48px, 9vh, 88px);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: clamp(52px, 12vw, 120px);
+      line-height: 0.95;
+      letter-spacing: 0.015em;
+      color: transparent;
+      -webkit-text-stroke: 1.5px var(--accent-line);
+      user-select: none;
+    }
+
+    .tagline {
+      margin: 18px 0 0;
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.32em;
+      text-transform: uppercase;
+      color: var(--text-faint);
+    }
+
+    /* ---------- Section scaffolding ---------- */
+    section + section { margin-top: clamp(40px, 7vh, 64px); }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px;
+      min-height: 32px;
+    }
+
+    .label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ---------- Phrase ---------- */
+    .phrase-field {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 0 10px;
+      border-bottom: 1px solid var(--hairline-strong);
+      transition: border-color 0.2s var(--ease);
+    }
+    .phrase-field:focus-within { border-bottom-color: var(--accent-line); }
+
+    .phrase-input {
+      flex: 1;
+      min-width: 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 6px 0;
+      color: var(--text);
+      font-family: var(--font-ui);
+      font-weight: 300;
+      font-size: clamp(22px, 3.6vw, 34px);
+      letter-spacing: -0.01em;
+    }
+    .phrase-input::placeholder { color: var(--text-faint); }
+
+    .icon-btn {
+      flex: none;
+      display: grid;
+      place-items: center;
+      border: none;
+      border-radius: 50%;
+      cursor: pointer;
+      padding: 0;
+      transition: background-color 0.15s var(--ease), color 0.15s var(--ease),
+                  opacity 0.15s var(--ease), transform 0.15s var(--ease);
+    }
+    .icon-btn svg { display: block; }
+
+    .clear-btn {
+      width: 30px;
+      height: 30px;
+      background: transparent;
+      color: var(--text-faint);
+    }
+    .clear-btn:hover { background: var(--surface); color: var(--text-muted); }
+    .clear-btn[hidden] { display: none; }
+
+    .submit-btn {
+      width: 44px;
+      height: 44px;
+      background: var(--accent);
+      color: #fff;
+      box-shadow: 0 6px 20px -6px var(--accent-glow);
+    }
+    .submit-btn:hover { background: var(--accent-hover); transform: translateX(1px); }
+    .submit-btn:disabled {
+      background: var(--surface);
+      color: var(--text-faint);
+      box-shadow: none;
+      cursor: default;
+      transform: none;
+    }
+
+    /* ---------- Ordering (segmented control) ---------- */
+    .segmented {
+      display: inline-flex;
+      padding: 3px;
+      gap: 2px;
+      border: 1px solid var(--hairline);
+      border-radius: 999px;
+      background: var(--surface);
+    }
+    .segmented button {
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-family: var(--font-ui);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.02em;
+      padding: 6px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background-color 0.15s var(--ease), color 0.15s var(--ease);
+    }
+    .segmented button:hover { color: var(--text); }
+    .segmented button[aria-pressed="true"] {
+      background: rgba(208, 35, 127, 0.18);
+      color: #ffd3ea;
+    }
+
+    /* ---------- Tiles ---------- */
+    .tiles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-height: var(--tile-h);
+    }
+
+    .tile {
+      width: var(--tile-w);
+      height: var(--tile-h);
+      display: grid;
+      place-items: center;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: var(--radius);
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0) 55%),
+        var(--accent);
+      color: #fff;
+      font-family: var(--font-mono);
+      font-size: 20px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      box-shadow: 0 1px 0 rgba(0, 0, 0, 0.4), 0 8px 18px -10px var(--accent-glow);
+      transition: background-color 0.18s var(--ease), color 0.18s var(--ease),
+                  border-color 0.18s var(--ease), box-shadow 0.18s var(--ease),
+                  transform 0.18s var(--ease);
+    }
+    .tile:hover { transform: translateY(-2px); background-color: var(--accent-hover); }
+    .tile:active { transform: translateY(0); }
+
+    .tile.used {
+      background: transparent;
+      border-color: var(--hairline);
+      color: var(--text-faint);
+      box-shadow: none;
+      cursor: default;
+      transform: none;
+    }
+
+    .empty {
+      display: flex;
+      align-items: center;
+      width: 100%;
+      min-height: var(--tile-h);
+      padding: 0 16px;
+      border: 1px dashed var(--hairline);
+      border-radius: var(--radius);
+      color: var(--text-faint);
+      font-size: 14px;
+    }
+
+    /* ---------- Writing ---------- */
+    .count {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+    .count strong { color: var(--text); font-weight: 400; }
+
+    .writer-field {
+      position: relative;
+      border-bottom: 1px solid var(--hairline-strong);
+      transition: border-color 0.2s var(--ease);
+    }
+    .writer-field:focus-within { border-bottom-color: var(--accent-line); }
+
+    .writer-mirror,
+    .writer-input {
+      margin: 0;
+      padding: 4px 0 14px;
+      border: none;
+      font-family: var(--font-writing);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(38px, 6.4vw, 64px);
+      line-height: 1.2;
+      letter-spacing: 0;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+      word-break: normal;
+    }
+    .writer-mirror {
+      min-height: calc(1.2em + 18px);
+      color: var(--text);
+      pointer-events: none;
+    }
+    .writer-mirror .bad {
+      color: var(--danger);
+      text-decoration: underline wavy rgba(255, 122, 138, 0.6);
+      text-decoration-thickness: 1px;
+      text-underline-offset: 0.18em;
+    }
+    .writer-mirror .placeholder { color: var(--text-faint); }
+
+    .writer-input {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent;
+      color: transparent;
+      caret-color: var(--accent-line);
+      outline: none;
+      resize: none;
+      overflow: hidden;
+    }
+    .writer-input::selection { background: var(--accent-glow); color: transparent; }
+
+    .progress {
+      height: 2px;
+      margin-top: -1px;
+      background: transparent;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0;
+      background: var(--accent-line);
+      transition: width 0.25s var(--ease), background-color 0.2s var(--ease);
+    }
+
+    .status {
+      margin-top: 14px;
+      min-height: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+    .status.complete { color: var(--accent-line); font-weight: 500; }
+    .status.over { color: var(--danger); }
+
+    @media (max-width: 640px) {
+      :root { --tile-w: 34px; --tile-h: 42px; }
+      .tile { font-size: 17px; }
+      .section-head.wrap { flex-direction: column; align-items: flex-start; }
+      .segmented { max-width: 100%; overflow-x: auto; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>MARGRAM</h1>
+      <p class="tagline">Anagram workbench</p>
+    </header>
+
+    <section aria-labelledby="phraseLabel">
+      <div class="section-head">
+        <span class="label" id="phraseLabel">Phrase</span>
+      </div>
+      <form class="phrase-field" id="sourceForm" autocomplete="off">
+        <input class="phrase-input" id="sourceInput" type="text" spellcheck="false"
+               placeholder="margaret opened the door" aria-labelledby="phraseLabel">
+        <button type="button" class="icon-btn clear-btn" id="clearBtn" title="Clear" aria-label="Clear phrase" hidden>
+          <svg width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+            <path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          </svg>
+        </button>
+        <button type="submit" class="icon-btn submit-btn" id="submitBtn" title="Load letters" aria-label="Load letters" disabled>
+          <svg width="18" height="18" viewBox="0 0 18 18" aria-hidden="true">
+            <path d="M3 9h12M10 4l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </form>
+    </section>
+
+    <section aria-labelledby="lettersLabel">
+      <div class="section-head wrap">
+        <span class="label" id="lettersLabel">Letters</span>
+        <div class="segmented" role="group" aria-label="Letter ordering">
+          <button type="button" data-order="off" aria-pressed="true">Original</button>
+          <button type="button" data-order="alpha" aria-pressed="false">A–Z</button>
+          <button type="button" data-order="shuffle" aria-pressed="false">Shuffle</button>
+          <button type="button" data-order="vowels" aria-pressed="false">Vowels first</button>
+        </div>
+      </div>
+      <div class="tiles" id="tiles" aria-labelledby="lettersLabel"></div>
+    </section>
+
+    <section aria-labelledby="writerLabel">
+      <div class="section-head">
+        <span class="label" id="writerLabel">Anagram</span>
+        <span class="count" id="count"></span>
+      </div>
+      <div class="writer-field">
+        <div class="writer-mirror" id="writerMirror" aria-hidden="true"></div>
+        <textarea class="writer-input" id="writerInput" spellcheck="false" rows="1"
+                  aria-labelledby="writerLabel"></textarea>
+      </div>
+      <div class="progress" aria-hidden="true"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="status" id="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const VOWELS = new Set(['A', 'E', 'I', 'O', 'U']);
+
+      const sourceForm = document.getElementById('sourceForm');
+      const sourceInput = document.getElementById('sourceInput');
+      const clearBtn = document.getElementById('clearBtn');
+      const submitBtn = document.getElementById('submitBtn');
+      const orderBtns = Array.from(document.querySelectorAll('[data-order]'));
+      const tilesEl = document.getElementById('tiles');
+      const writerInput = document.getElementById('writerInput');
+      const writerMirror = document.getElementById('writerMirror');
+      const countEl = document.getElementById('count');
+      const progressFill = document.getElementById('progressFill');
+      const statusEl = document.getElementById('status');
+
+      const state = {
+        letters: [],        // letters of the loaded phrase, in phrase order
+        order: 'off',
+        shuffled: [],       // index permutation used by "shuffle"
+      };
+
+      // Uppercase, strip accents, keep only A–Z and 0–9.
+      function normalizeChar(ch) {
+        const base = ch.normalize('NFD').replace(/[̀-ͯ]/g, '').toUpperCase();
+        return /^[A-Z0-9]$/.test(base) ? base : null;
+      }
+
+      function lettersOf(text) {
+        const out = [];
+        for (const ch of text) {
+          const n = normalizeChar(ch);
+          if (n) out.push(n);
+        }
+        return out;
+      }
+
+      function countOf(arr) {
+        const counts = new Map();
+        for (const l of arr) counts.set(l, (counts.get(l) || 0) + 1);
+        return counts;
+      }
+
+      function shuffleIndices(n) {
+        const idx = Array.from({ length: n }, (_, i) => i);
+        for (let i = n - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [idx[i], idx[j]] = [idx[j], idx[i]];
+        }
+        return idx;
+      }
+
+      function displayLetters() {
+        const letters = state.letters;
+        switch (state.order) {
+          case 'alpha':
+            return [...letters].sort((a, b) => {
+              const ad = /\d/.test(a), bd = /\d/.test(b);
+              if (ad !== bd) return ad ? 1 : -1;  // letters before digits
+              return a < b ? -1 : a > b ? 1 : 0;
+            });
+          case 'shuffle':
+            return state.shuffled.map(i => letters[i]);
+          case 'vowels':
+            return [
+              ...letters.filter(l => VOWELS.has(l)),
+              ...letters.filter(l => !VOWELS.has(l)),
+            ];
+          default:
+            return [...letters];
+        }
+      }
+
+      function syncPhraseControls() {
+        const hasText = sourceInput.value.length > 0;
+        clearBtn.hidden = !hasText;
+        submitBtn.disabled = !hasText && state.letters.length === 0;
+      }
+
+      function loadPhrase() {
+        state.letters = lettersOf(sourceInput.value);
+        state.shuffled = shuffleIndices(state.letters.length);
+        syncPhraseControls();
+        render();
+      }
+
+      function setOrder(order) {
+        if (order === 'shuffle') state.shuffled = shuffleIndices(state.letters.length);
+        state.order = order;
+        orderBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.order === order)));
+        renderTiles();
+      }
+
+      function renderTiles() {
+        tilesEl.textContent = '';
+
+        if (state.letters.length === 0) {
+          const empty = document.createElement('div');
+          empty.className = 'empty';
+          empty.textContent = 'Enter a phrase above to lay out its letters.';
+          tilesEl.appendChild(empty);
+          return;
+        }
+
+        const typedCounts = countOf(lettersOf(writerInput.value));
+        const usedSoFar = new Map();
+
+        for (const letter of displayLetters()) {
+          const used = (usedSoFar.get(letter) || 0) < (typedCounts.get(letter) || 0);
+          if (used) usedSoFar.set(letter, (usedSoFar.get(letter) || 0) + 1);
+
+          const tile = document.createElement('button');
+          tile.type = 'button';
+          tile.className = 'tile' + (used ? ' used' : '');
+          tile.textContent = letter;
+          tile.dataset.letter = letter;
+          if (used) {
+            tile.tabIndex = -1;
+            tile.setAttribute('aria-label', `${letter}, used`);
+          } else {
+            tile.setAttribute('aria-label', `Insert ${letter}`);
+          }
+          tilesEl.appendChild(tile);
+        }
+      }
+
+      function renderWriter() {
+        const text = writerInput.value;
+        writerMirror.textContent = '';
+
+        if (!text) {
+          const ph = document.createElement('span');
+          ph.className = 'placeholder';
+          ph.textContent = 'Begin writing…';
+          writerMirror.appendChild(ph);
+          return;
+        }
+
+        const available = countOf(state.letters);
+        const seen = new Map();
+        let run = '';
+        let runBad = false;
+
+        const flush = () => {
+          if (!run) return;
+          if (runBad) {
+            const span = document.createElement('span');
+            span.className = 'bad';
+            span.textContent = run;
+            writerMirror.appendChild(span);
+          } else {
+            writerMirror.appendChild(document.createTextNode(run));
+          }
+          run = '';
+        };
+
+        for (const ch of text) {
+          const n = normalizeChar(ch);
+          let bad = false;
+          if (n) {
+            const count = (seen.get(n) || 0) + 1;
+            seen.set(n, count);
+            bad = count > (available.get(n) || 0);
+          }
+          if (bad !== runBad) { flush(); runBad = bad; }
+          run += ch;
+        }
+        flush();
+
+        // Keep the mirror's height in step with a trailing newline in the textarea.
+        if (text.endsWith('\n')) writerMirror.appendChild(document.createTextNode('​'));
+      }
+
+      function renderStatus() {
+        const total = state.letters.length;
+        statusEl.className = 'status';
+
+        if (total === 0) {
+          statusEl.textContent = '';
+          countEl.textContent = '';
+          progressFill.style.width = '0';
+          return;
+        }
+
+        const available = countOf(state.letters);
+        const typed = countOf(lettersOf(writerInput.value));
+        let used = 0, extra = 0;
+        for (const [l, c] of typed) {
+          const a = available.get(l) || 0;
+          used += Math.min(c, a);
+          extra += Math.max(0, c - a);
+        }
+        const left = total - used;
+
+        countEl.innerHTML = `<strong>${used}</strong> / ${total}`;
+        progressFill.style.width = `${(used / total) * 100}%`;
+
+        if (extra > 0) {
+          statusEl.classList.add('over');
+          statusEl.textContent = `${extra} letter${extra === 1 ? '' : 's'} not in the phrase · ${left} remaining`;
+        } else if (left === 0) {
+          statusEl.classList.add('complete');
+          statusEl.textContent = 'Anagram complete';
+        } else {
+          statusEl.textContent = `${left} letter${left === 1 ? '' : 's'} remaining`;
+        }
+      }
+
+      function render() {
+        renderTiles();
+        renderWriter();
+        renderStatus();
+      }
+
+      function insertAtCaret(str) {
+        writerInput.focus();
+        const start = writerInput.selectionStart;
+        const end = writerInput.selectionEnd;
+        writerInput.setRangeText(str, start, end, 'end');
+        render();
+      }
+
+      // ---------- Events ----------
+      sourceForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        loadPhrase();
+        if (state.letters.length) writerInput.focus();
+      });
+
+      sourceInput.addEventListener('input', syncPhraseControls);
+
+      clearBtn.addEventListener('click', () => {
+        sourceInput.value = '';
+        loadPhrase();
+        sourceInput.focus();
+      });
+
+      orderBtns.forEach(btn => btn.addEventListener('click', () => setOrder(btn.dataset.order)));
+
+      tilesEl.addEventListener('mousedown', (e) => {
+        // Keep the writing area's caret where it is.
+        if (e.target.closest('.tile')) e.preventDefault();
+      });
+      tilesEl.addEventListener('click', (e) => {
+        const tile = e.target.closest('.tile');
+        if (!tile || tile.classList.contains('used')) return;
+        insertAtCaret(tile.dataset.letter.toLowerCase());
+      });
+
+      writerInput.addEventListener('input', render);
+
+      syncPhraseControls();
+      render();
+    })();
+  </script>
+</body>
+</html>
